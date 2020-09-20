@@ -11,7 +11,7 @@
         app:layout_constraintBottom_toTopOf="@+id/control"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.shuvro.GraphicOverlay
+        <com.shuvro.floatingcameraview.GraphicOverlay
             android:id="@+id/graphic_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
