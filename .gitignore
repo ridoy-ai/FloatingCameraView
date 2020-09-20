@@ -86,3 +86,4 @@ lint/tmp/
 
 #google-services.json
 app/google-services.json
+.idea/codeStyles/Project.xml

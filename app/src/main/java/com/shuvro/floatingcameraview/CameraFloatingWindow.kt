@@ -8,6 +8,8 @@ import android.view.*
 import kotlinx.android.synthetic.main.layout_floating_camera.view.*
 import kotlin.math.abs
 
+import androidx.camera.core.CameraSelector;
+
 class CameraFloatingWindow constructor(private val context: Context) {
 
     private var windowManager: WindowManager? = null
@@ -28,6 +30,8 @@ class CameraFloatingWindow constructor(private val context: Context) {
 
     private var isShowing = false
     private var touchConsumedByMove = false
+
+    private var cameraSelector: CameraSelector? = null
 
     private val onTouchListener = View.OnTouchListener { view, event ->
         val totalDeltaX = lastX - firstX
@@ -72,7 +76,9 @@ class CameraFloatingWindow constructor(private val context: Context) {
     init {
         with(floatView) {
             closeImageButton.setOnClickListener { dismiss() }
+            cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build()
             //textView.text = "I'm a float view!"
+
         }
 
         floatView.setOnTouchListener(onTouchListener)
