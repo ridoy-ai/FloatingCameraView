@@ -7,9 +7,14 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/preview_view"
         android:layout_width="match_parent"
-        android:layout_height="360dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toTopOf="@+id/control"
         app:layout_constraintTop_toTopOf="parent">
+
+        <com.shuvro.GraphicOverlay
+            android:id="@+id/graphic_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </androidx.camera.view.PreviewView>
 
