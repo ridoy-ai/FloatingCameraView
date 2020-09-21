@@ -18,7 +18,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_DRAW_OVERLAY_PERMISSION = 5;
     private CameraFloatingWindow cameraFloatingWindow;
-    private String[] permissions = {android.Manifest.permission.CAMERA};
+    private String[] permissions = {Manifest.permission.CAMERA};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void btn_click(View view) {
         if(hasNoPermissions()) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+            ActivityCompat.requestPermissions(this, permissions, 1);
         }
         else {
             cameraFloatingWindow = new CameraFloatingWindow(this);
