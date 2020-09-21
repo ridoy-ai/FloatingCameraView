@@ -2,8 +2,12 @@ package com.shuvro.floatingcameraview;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,13 +18,12 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_DRAW_OVERLAY_PERMISSION = 5;
     private CameraFloatingWindow cameraFloatingWindow;
+    private String[] permissions = {android.Manifest.permission.CAMERA};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        cameraFloatingWindow = new CameraFloatingWindow(getApplicationContext());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -47,10 +50,21 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void btn_click(View view) {
-        if(Settings.canDrawOverlays(getApplicationContext())){
-            cameraFloatingWindow.show();
-        }else{
-            startManageDrawOverlaysPermission();
+        if(hasNoPermissions()) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
         }
+        else {
+            cameraFloatingWindow = new CameraFloatingWindow(this);
+            if (Settings.canDrawOverlays(getApplicationContext())) {
+                cameraFloatingWindow.show();
+            } else {
+                startManageDrawOverlaysPermission();
+            }
+        }
+    }
+
+    private boolean hasNoPermissions(){
+        return ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED;
     }
 }

@@ -2,13 +2,18 @@ package com.shuvro.floatingcameraview
 
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
+import android.content.ContextWrapper
 import android.graphics.PixelFormat
 import android.os.Build
 import android.view.*
 import kotlinx.android.synthetic.main.layout_floating_camera.view.*
 import kotlin.math.abs
 
-import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 
 class CameraFloatingWindow constructor(private val context: Context) {
 
@@ -76,9 +81,22 @@ class CameraFloatingWindow constructor(private val context: Context) {
     init {
         with(floatView) {
             closeImageButton.setOnClickListener { dismiss() }
-            cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build()
-            //textView.text = "I'm a float view!"
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+            cameraProviderFuture.addListener({
+                val cameraProvider = cameraProviderFuture.get()
 
+                val cameraSelector = CameraSelector.Builder()
+                        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                        .build()
+
+                val preview = Preview.Builder()
+                        .build()
+                        .also {
+                            it.setSurfaceProvider(preview_view.createSurfaceProvider())
+                        }
+
+                context.lifecycleOwner()?.let { cameraProvider.bindToLifecycle(it, cameraSelector, preview) }
+            }, ContextCompat.getMainExecutor(context))
         }
 
         floatView.setOnTouchListener(onTouchListener)
@@ -101,9 +119,9 @@ class CameraFloatingWindow constructor(private val context: Context) {
 
     fun show() {
         //if (context.canDrawOverlays) {
-            dismiss()
-            isShowing = true
-            windowManager?.addView(floatView, layoutParams)
+        dismiss()
+        isShowing = true
+        windowManager?.addView(floatView, layoutParams)
         //}
     }
 
@@ -112,5 +130,17 @@ class CameraFloatingWindow constructor(private val context: Context) {
             windowManager?.removeView(floatView)
             isShowing = false
         }
+    }
+}
+private fun Context.lifecycleOwner(): LifecycleOwner? {
+    var curContext = this
+    var maxDepth = 20
+    while (maxDepth-- > 0 && curContext !is LifecycleOwner) {
+        curContext = (curContext as ContextWrapper).baseContext
+    }
+    return if (curContext is LifecycleOwner) {
+        curContext as LifecycleOwner
+    } else {
+        null
     }
 }
